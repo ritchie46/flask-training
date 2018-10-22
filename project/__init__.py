@@ -1,7 +1,6 @@
 from flask import Flask
 
-DEBUG = True
-
 app = Flask(__name__)
+app.config.from_pyfile('../instance/flask.cfg')
 
 import project.views
