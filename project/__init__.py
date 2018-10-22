@@ -1,5 +1,7 @@
 from flask import Flask
 
+DEBUG = True
+
 app = Flask(__name__)
 
-from project.views import app
+import project.views
