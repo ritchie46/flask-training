@@ -1,0 +1,602 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Flask training</title>
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/black.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!--smaller code font-->
+    <style>
+        .reveal pre code {
+            font-size: 0.5em;
+            line-height: 1.2;
+        }
+
+        .reveal pre {
+            width: 120%;
+            margin-left: -10%;
+        }
+
+        .small-fonts ul {
+
+            font-size: 25px;
+        }
+    </style>
+
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section data-background-color="white">
+        <h1>Flask</h1>
+        <img src="img/flask.png">
+        </section>
+        <section>
+        Microframework based on Werkzeug and Jinja2
+        <br>
+        <br>
+        <ul>
+        <li>Werkzeug: WSGI utility package</li>
+        <li>HTML templating language</li>
+        </ul>
+        <br>
+        <br>
+
+        <small><i>* WSGI: Protocol that let's a python application talk with a web server.</i></small>
+        <small><i>* Microframework philosophy: install what you need one step at a time.
+        No batteries included.</i></small>
+        </section>
+
+        <section>Setup environement
+        <pre><code data-trim>
+        $ conda create --name flask-training -y &&
+        source activate flask-training &&
+        conda install flask -y
+        </code></pre>
+        In the root of your projects directory run:
+        <pre><code data-trim>
+
+        $ pip freeze > requirements.txt
+        </code></pre>
+        </section>
+        <section>
+        <img src="img/helloworld.jpeg">
+        </section>
+        <section>
+        Setup file tree
+        <pre><code data-trim>
+
+        |__ project
+        |   |__ __init__.py
+        |   |__ static
+        |   |__ templates
+        |   |__ views.py
+        |__ requirements.txt
+        |__ run.py
+        </code></pre>
+        </section>
+
+        <section>
+        <i>project/__init__.py</i>
+        <pre><code data-trim>
+        from flask import Flask
+        DEBUG = True
+        app = Flask(__name__)
+
+        from project.views import app
+        </code></pre>
+        </section>
+
+        <section>
+        <i>static/index.css</i>
+        <pre><code data-trim>
+
+        .wrapper {
+        padding-top: 50px;
+        }
+        </code></pre>
+        </section>
+
+        <section>
+        <i>project/views.py</i>
+        <pre><code data-trim>
+        from project import app
+
+
+        @app.route('/')
+        def index():
+        return 'Hello world'
+        </code></pre>
+        </section>
+        <section>
+        <i>run.py</i>
+        <pre><code data-trim>
+        from project import app
+
+        if __name__ == '__main__':
+        app.run()
+        </code></pre>
+        </section>
+        <section data-background-color="white" data-background-image="img/hello_world.png" data-background-size="contain">
+        Magic!
+        <pre><code data-trim>
+        $ python run.py
+        </code></pre>
+
+        browse to
+        http://127.0.0.1:5000/
+        </section>
+        <section>
+        Version control
+        <pre><code data-trim>
+        $ git init
+        $ vi .gitignore
+        </code></pre>
+
+        <i>.gitignore</i>
+        <pre><code data-trim>
+        > __pycache__/
+        > .idea/
+        </code></pre>
+
+        Start a new branch for new functionality
+        <pre><code data-trim>
+        $ git add . && git commit -m 'hello world' &&
+        git checkout -b templates_init
+        </code></pre>
+
+
+        </section>
+        <section>
+        Adding some HTML
+        <pre><code data-trim>
+        $ mkdir project/templates &&
+        touch project/templates/base.html
+        </code></pre>
+
+        <small>Copy paste in teams</small>
+
+        </section>
+        <section data-markdown>
+
+
+        <textarea data-template >
+        ```
+        $ touch project/templates/simple_form.html
+        ```
+
+        *templates/simple_form.html*
+        ```
+        {% extends "base.html" %}
+
+        {% block content %}
+
+        {% for number in range(1, enthusiasm, 1) %}
+        <h{{ number }}>hello world</h{{ number }}>
+        {% endfor %}
+
+        {% endblock %}
+        ```
+        </textarea>>
+        </section>
+
+        <section>
+        <i>views.py</i>
+        <pre><code data-trim>
+        from project import app
+        from flask import render_template
+        import random
+
+
+        @app.route('/')
+        def index():
+
+        enthusiasm = int(random.uniform(2, 8))
+
+        return render_template('simple_form.html', enthusiasm=enthusiasm)
+        </code></pre>
+        </section>
+        <section data-background-color="white" data-background-image="img/enthusiasm.png" data-background-size="contain">
+        refresh!
+        </section>
+        <section>
+        Committing to source control
+        <pre><code>
+        $ git add . &&
+        git commit -m 'templates init' &&
+        git checkout master &&
+        git merge --ff-only templates_init &&
+        git checkout -b config
+        </code></pre>
+        </section>
+        <section>
+        Configurations and application secrets. Don't add to source control!
+
+        <pre><code>
+        $ mkdir instance && touch instance/flask.cfg
+        </code></pre>
+        <i>.gitignore</i>
+        <pre><code>
+        .idea/
+        __pycache__/
+        instance/  # I am new
+        </code></pre>
+        </section>
+        <section>
+        Latest file tree
+        <pre><code data-trim>
+
+        |__ project
+        |   |__ templates
+        |   |   |...
+        |   |...
+        |   |__ instance
+        |   |   |__flask.cfg
+        |   |
+        |__ requirements.txt
+        |__ run.py
+        </code></pre>
+        </section>
+
+        <section>
+        <i>instance/flask.cfg</i>
+        <pre><code data-trim>
+        # Set to False in production
+        DEBUG = True
+
+        # needed for csrf protection
+        SECRET_KEY = 'our-little-secret'
+        </code></pre>
+        </section>
+
+        <section>
+        <i>project/__init__.py</i>
+        <pre><code data-trim>
+        from flask import Flask
+
+        app = Flask(__name__)
+        app.config.from_pyfile('../instance/flask.cfg')
+
+        import project.views
+        </code></pre>
+        </section>
+        <section>
+        <i>project/__init__.py</i>
+        <pre><code data-trim>
+        from flask import Flask
+
+        app = Flask(__name__)
+        app.config.from_pyfile('../instance/flask.cfg')
+
+        import project.views
+        </code></pre>
+        </section>
+        <section>
+        Committing to source control
+        <pre><code>
+        $ git add . &&
+        git commit -m 'config file' &&
+        git checkout master &&
+        git merge --ff-only config &&
+        git checkout -b forms
+        </code></pre>
+        </section>
+
+        <section>
+        <img src="img/forms.png">
+        </section>
+
+        <section>
+        Add a new dependency.
+        <pre><code data-trim>
+        conda install flask-wtf -y &&
+        pip freeze > requirements.txt
+        </code></pre>
+
+        </section>
+
+        <section>
+        Let's use the power of JINJA2
+        <img src="img/arm.png">
+        </section>
+
+        <section>
+        <i>project/templates/simple_form.html</i>
+        <pre><code data-trim dat>
+        {% extends "base.html" %}
+        {% from "_form_macros.html" import render_form_field %}
+
+        {% block content %}
+
+        <div class="container">
+        <form action="{{ url_for(url) }}" method="post">
+        {{ form.csrf_token }}
+        <dl>
+        {% for field in form %}
+        {% if 'csrf' not in field.name %}
+        {{ render_form_field(field) }}
+
+        {% endif %}
+        {% endfor %}
+        </dl>
+        <button class="btn btn-sm btn-info" type="submit">{{ form.button_value }}</button>
+        </form>
+        </div>
+
+        {% endblock %}
+        </code></pre>
+
+        </section>
+
+
+        <section>
+        <i>project/templates/_form_macros.html</i>
+        <pre><code data-trim>
+        <!--http://flask.pocoo.org/docs/0.10/patterns/wtforms/-->
+
+        {% macro render_form_field(form) %}
+        <dt>{{ form.label }}:
+
+        <dd>
+        {% if 'FileField' in form.__repr__() %}
+        <label class="btn btn-default">
+        {{ form(**kwargs)|safe }}
+        </label>
+        {% else %}
+        {{ form(class_="form-control", **kwargs)|safe }}
+        {% endif %}
+
+        {% if form.errors %}
+        <span class="error">
+        {% for error in form.errors %}
+        {{ error }}
+        {% endfor %}
+        </span>
+        {% endif %}
+        </dd>
+
+
+        {% endmacro %}
+        </code></pre>
+
+        </section>
+
+        <section>
+        Refactor!
+        <br>
+        <small>(And make sure that the app still works as expected)</small>
+        <pre><code data-trim>
+        |___instance/
+        |__ project/
+        |   |__ __init__.py
+        |   |__ static/
+        |   |__ templates/
+        |   |__ classifier/
+        |   |   |__ views.py
+        |   |   |__ forms.py
+        |   |
+        |   |__ users/
+        |   |   |__ views.py
+        |   |   |__ forms.py
+        |__ requirements.txt
+        |__ run.py
+        |__ .gitignore
+
+        </code></pre>
+
+        </section>
+        <section>
+        <section>
+        Introducing Blueprints.
+        <br>
+        <br>
+        <small><i>project/users/views.py</i></small>
+        <pre><code data-trim>
+        from flask import Blueprint
+
+        bp = Blueprint('users', __name__)
+        </code></pre>
+        <small><i>project/classifier/views.py</i></small>
+        <pre><code data-trim>
+        from flask import Blueprint
+
+        bp = Blueprint('classifier', __name__,
+        url_prefix='/classifier')
+        </code></pre>
+        <small><i>project/__init__.py</i></small>
+        <pre><code data-trim>
+        from flask import Flask
+
+        app = Flask(__name__)
+        app.config.from_pyfile('../instance/flask.cfg')
+
+        from project.users.views import bp as users_bp
+        from project.classifier.views import bp as class_bp
+
+        app.register_blueprint(users_bp)
+        app.register_blueprint(class_bp)
+        </code></pre>
+        </section>
+        <section>
+        Change the decorators...
+        <pre><code data-trim>
+        @bp.route('someurl')
+        def my_func():
+        pass
+        </code></pre>
+        </section>
+        </section>
+
+        <section>
+        <section>
+        Create forms.
+        <br>
+        <br>
+        <small><i>project/users/forms.py</i></small>
+        <pre><code data-trim>
+        from flask_wtf import FlaskForm
+        from wtforms import StringField
+        from wtforms.validators import DataRequired
+
+
+        class LoginForm(FlaskForm):
+        username = StringField('Username', validators=[DataRequired()])
+        button_value = 'Remember me'
+        </code></pre>
+
+        <small><i>project/classifier/forms.py</i></small>
+        <pre><code data-trim>
+        from flask_wtf import FlaskForm
+        from wtforms import DecimalField
+        from wtforms.validators import DataRequired
+
+
+        class ClassifierForm(FlaskForm):
+        sepal_length = DecimalField('Sepal length', validators=[DataRequired()])
+        sepal_width = DecimalField('Sepal width', validators=[DataRequired()])
+        petal_length = DecimalField('Petal length', validators=[DataRequired()])
+        petal_width = DecimalField('Petal width', validators=[DataRequired()])
+        button_value = 'Classify'
+        </code></pre>
+        </section>
+
+        <section>
+        Create forms.
+        <br>
+        <br>
+        <small><i>project/users/views.py</i></small>
+        <pre><code data-trim>
+        from flask import render_template, Blueprint, flash, session, redirect, url_for, request
+        from project.users.forms import LoginForm
+
+        bp = Blueprint('users', __name__)
+
+        @bp.route('/', methods=['GET', 'POST'])
+        def login():
+        form = LoginForm()
+        if request.method == 'GET' and 'username' not in session:
+        return render_template('simple_form.html', form=form, url='users.login')
+
+        if form.validate_on_submit():
+        user = form.username.data
+        flash(f'Welcome {user}', 'info')
+        session['username'] = user
+
+        return redirect(url_for('classifier.index'))
+
+        @bp.route('/forget', methods=['POST'])
+        def expire():
+        flash(f"{session['username']}, your session has expired.", 'info')
+        del session['username']
+        return redirect(url_for('users.login'))
+        </code></pre>
+
+        </section>
+        <section>
+        Create forms.
+        <br>
+        <br>
+        <small><i>project/classifier/views.py</i></small>
+        <pre><code data-trim>
+        from flask import render_template, Blueprint, session, redirect, url_for, flash
+        from project.classifier.forms import ClassifierForm
+
+        bp = Blueprint('classifier', __name__, url_prefix='/classifier')
+
+        @bp.route('/')
+        def index():
+        if 'username' not in session:
+        flash('Hi, please tell us who you are!', 'info')
+        return redirect(url_for('users.login'))
+        form = ClassifierForm()
+        return render_template('simple_form.html', form=form, url='classifier.index')
+        </code></pre>
+        </section>
+        </section>
+
+        <section>
+        committing to source control
+        <pre><code>
+        $ git add . &&
+        git commit -m 'forms init' &&
+        git checkout master &&
+        git merge --ff-only forms &&
+        git checkout -b model
+        </code></pre>
+        </section>
+
+        <section>
+        To do!
+        <br>
+        <br>
+        <small><i>project/classifier/views.py</i></small>
+        <pre><code data-trim data-noescape>
+        @bp.route('/result', methods=['POST'])
+        def result():
+        pass
+
+
+        @bp.route('/show/&lt;flower&gt;')
+        def show(flower):
+        # show the flower image
+        pass
+
+        </code></pre>
+
+        </section>
+
+        <section>
+            Future extensions...
+
+            <div class="small-fonts">
+                <ul >
+                    <li>State in a database! --> SQLAlchemy Object Relational Mapping (ORM) or REDIS (Key Value store)</li>
+                    <li>Production: Use a production server! For instance Gunicorn with NGINX</li>
+                    <li>Users: Leave password hashing and other sensitive information to libraries such as Flask-Bcrypt</li>
+                    <li>Include unit tests</li>
+                    <li>Error handling</li>
+                    <li>Client side frameworks such as Vue.js or React.js</li>
+                </ul>
+
+            </div>
+        </section>
+    </div>
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script>
+    // More info about config & dependencies:
+    // - https://github.com/hakimel/reveal.js#configuration
+    // - https://github.com/hakimel/reveal.js#dependencies
+    Reveal.initialize({
+        dependencies: [
+            {src: 'plugin/markdown/marked.js'},
+            {src: 'plugin/markdown/markdown.js'},
+            {src: 'plugin/notes/notes.js', async: true},
+            {
+                src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+                    hljs.initHighlightingOnLoad();
+                }
+            }
+        ]
+    });
+</script>
+</body>
+</html>
