@@ -7,15 +7,16 @@ bp = Blueprint('users', __name__)
 @bp.route('/', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    if request.method == 'GET' and 'username' not in session:
-        return render_template('simple_form.html', form=form, url='users.login')
 
-    if form.validate_on_submit():
+    if form.validate_on_submit():  # request is POST
         user = form.username.data
         flash(f'Welcome {user}', 'info')
         session['username'] = user
 
-    return redirect(url_for('classifier.index'))
+        return redirect(url_for('classifier.index'))
+
+    # GET
+    return render_template('simple_form.html', form=form, url='users.login')
 
 
 @bp.route('/forget', methods=['POST'])

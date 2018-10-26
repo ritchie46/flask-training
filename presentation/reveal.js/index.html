@@ -15,7 +15,7 @@
     <!--smaller code font-->
     <style>
         .reveal pre code {
-            font-size: 0.5em;
+            font-size: 0.6em;
             line-height: 1.2;
         }
 
@@ -95,8 +95,9 @@
         <i>project/__init__.py</i>
         <pre><code data-trim>
         from flask import Flask
-        DEBUG = True
+
         app = Flask(__name__)
+        app.config['DEBUG'] = True
 
         from project.views import app
         </code></pre>
@@ -120,7 +121,7 @@
 
         @app.route('/')
         def index():
-        return 'Hello world'
+            return 'Hello world'
         </code></pre>
         </section>
         <section>
@@ -129,7 +130,7 @@
         from project import app
 
         if __name__ == '__main__':
-        app.run()
+            app.run()
         </code></pre>
         </section>
         <section data-background-color="white" data-background-image="img/hello_world.png" data-background-size="contain">
@@ -169,7 +170,7 @@
         touch project/templates/base.html
         </code></pre>
 
-        <small>Copy paste in teams</small>
+        <small>Note to self: copy paste *project/templates/base.html* in slack/ teams/ msn!</small>
 
         </section>
         <section data-markdown>
@@ -206,9 +207,9 @@
         @app.route('/')
         def index():
 
-        enthusiasm = int(random.uniform(2, 8))
+            enthusiasm = int(random.uniform(2, 8))
 
-        return render_template('simple_form.html', enthusiasm=enthusiasm)
+            return render_template('simple_form.html', enthusiasm=enthusiasm)
         </code></pre>
         </section>
         <section data-background-color="white" data-background-image="img/enthusiasm.png" data-background-size="contain">
@@ -244,10 +245,10 @@
         |__ project
         |   |__ templates
         |   |   |...
-        |   |...
-        |   |__ instance
-        |   |   |__flask.cfg
         |   |
+        |__ instance
+        |   |__flask.cfg
+        |   |...
         |__ requirements.txt
         |__ run.py
         </code></pre>
@@ -402,7 +403,7 @@
         </section>
         <section>
         <section>
-        Introducing Blueprints.
+            Introducing Blueprints.
         <br>
         <br>
         <small><i>project/users/views.py</i></small>
@@ -455,8 +456,8 @@
 
 
         class LoginForm(FlaskForm):
-        username = StringField('Username', validators=[DataRequired()])
-        button_value = 'Remember me'
+            username = StringField('Username', validators=[DataRequired()])
+            button_value = 'Remember me'
         </code></pre>
 
         <small><i>project/classifier/forms.py</i></small>
@@ -467,11 +468,11 @@
 
 
         class ClassifierForm(FlaskForm):
-        sepal_length = DecimalField('Sepal length', validators=[DataRequired()])
-        sepal_width = DecimalField('Sepal width', validators=[DataRequired()])
-        petal_length = DecimalField('Petal length', validators=[DataRequired()])
-        petal_width = DecimalField('Petal width', validators=[DataRequired()])
-        button_value = 'Classify'
+            sepal_length = DecimalField('Sepal length', validators=[DataRequired()])
+            sepal_width = DecimalField('Sepal width', validators=[DataRequired()])
+            petal_length = DecimalField('Petal length', validators=[DataRequired()])
+            petal_width = DecimalField('Petal width', validators=[DataRequired()])
+            button_value = 'Classify'
         </code></pre>
         </section>
 
@@ -488,22 +489,23 @@
 
         @bp.route('/', methods=['GET', 'POST'])
         def login():
-        form = LoginForm()
-        if request.method == 'GET' and 'username' not in session:
-        return render_template('simple_form.html', form=form, url='users.login')
+            form = LoginForm()
 
-        if form.validate_on_submit():
-        user = form.username.data
-        flash(f'Welcome {user}', 'info')
-        session['username'] = user
+            if form.validate_on_submit(): # request is post
+                user = form.username.data
+                flash(f'Welcome {user}', 'info')
+                session['username'] = user
 
-        return redirect(url_for('classifier.index'))
+                return redirect(url_for('classifier.index'))
+
+            # GET
+            return render_template('simple_form.html', form=form, url='users.login')
 
         @bp.route('/forget', methods=['POST'])
         def expire():
-        flash(f"{session['username']}, your session has expired.", 'info')
-        del session['username']
-        return redirect(url_for('users.login'))
+            flash(f"{session['username']}, your session has expired.", 'info')
+            del session['username']
+            return redirect(url_for('users.login'))
         </code></pre>
 
         </section>
@@ -520,11 +522,11 @@
 
         @bp.route('/')
         def index():
-        if 'username' not in session:
-        flash('Hi, please tell us who you are!', 'info')
-        return redirect(url_for('users.login'))
-        form = ClassifierForm()
-        return render_template('simple_form.html', form=form, url='classifier.index')
+            if 'username' not in session:
+                flash('Hi, please tell us who you are!', 'info')
+                return redirect(url_for('users.login'))
+            form = ClassifierForm()
+            return render_template('simple_form.html', form=form, url='classifier.index')
         </code></pre>
         </section>
         </section>
@@ -548,13 +550,13 @@
         <pre><code data-trim data-noescape>
         @bp.route('/result', methods=['POST'])
         def result():
-        pass
+            pass
 
 
         @bp.route('/show/&lt;flower&gt;')
         def show(flower):
-        # show the flower image
-        pass
+            # show the flower image
+            pass
 
         </code></pre>
 
