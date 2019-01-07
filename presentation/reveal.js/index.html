@@ -95,9 +95,10 @@
         <i>project/__init__.py</i>
         <pre><code data-trim>
         from flask import Flask
+        import os
 
         app = Flask(__name__)
-        app.config['DEBUG'] = True
+        os.environ['FLASK_ENV'] = 'development'
 
         from project.views import app
         </code></pre>
@@ -130,7 +131,7 @@
         from project import app
 
         if __name__ == '__main__':
-            app.run()
+            app.run(port=8000)
         </code></pre>
         </section>
         <section data-background-color="white" data-background-image="img/hello_world.png" data-background-size="contain">
@@ -140,7 +141,7 @@
         </code></pre>
 
         browse to
-        http://127.0.0.1:5000/
+        http://127.0.0.1:8000/
         </section>
         <section>
         Version control
@@ -302,6 +303,31 @@
         <img src="img/forms.png">
         </section>
 
+            <section>
+        Refactor!
+        <br>
+        <small>(And make sure that the app still works as expected)</small>
+        <pre><code data-trim>
+        |___instance/
+        |__ project/
+        |   |__ __init__.py
+        |   |__ static/
+        |   |__ templates/
+        |   |__ classifier/
+        |   |   |__ views.py
+        |   |   |__ forms.py
+        |   |
+        |   |__ users/
+        |   |   |__ views.py
+        |   |   |__ forms.py
+        |__ requirements.txt
+        |__ run.py
+        |__ .gitignore
+
+        </code></pre>
+
+        </section>
+
         <section>
         Add a new dependency.
         <pre><code data-trim>
@@ -377,30 +403,6 @@
 
         </section>
 
-        <section>
-        Refactor!
-        <br>
-        <small>(And make sure that the app still works as expected)</small>
-        <pre><code data-trim>
-        |___instance/
-        |__ project/
-        |   |__ __init__.py
-        |   |__ static/
-        |   |__ templates/
-        |   |__ classifier/
-        |   |   |__ views.py
-        |   |   |__ forms.py
-        |   |
-        |   |__ users/
-        |   |   |__ views.py
-        |   |   |__ forms.py
-        |__ requirements.txt
-        |__ run.py
-        |__ .gitignore
-
-        </code></pre>
-
-        </section>
         <section>
         <section>
             Introducing Blueprints.
